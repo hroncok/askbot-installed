@@ -69,6 +69,8 @@ from askbot.utils.url_utils import strip_path
 from askbot import mail
 
 from django import VERSION
+import HTMLParser
+
 
 #stores the 1.X version not the security release numbers
 DJANGO_VERSION = VERSION[:2]
@@ -758,7 +760,8 @@ def user_assert_can_post_text(self, text):
     """Raises exceptions.PermissionDenied, if user does not have
     privilege to post given text, depending on the contents
     """
-    if re.search(URL_RE, text):
+    html_parser = HTMLParser.HTMLParser()
+    if re.search(URL_RE, html_parser.unescape(text).lower()):
         min_rep = askbot_settings.MIN_REP_TO_SUGGEST_LINK
         if self.is_authenticated() and self.reputation < min_rep:
             message = _(
